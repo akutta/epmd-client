@@ -7,14 +7,6 @@ class DecoderError extends Error {
   }
 }
 
-exports.decode = function decode(buf) {
-  let code = buf.readUInt8(0);
-  switch (code) {
-    case constants.PORT2_RESP:
-      return this.decodePortResponse(buf);
-  }
-};
-
 exports.decodePortResponse = buf => {
   let result = buf.readUInt8(1);
   if ( result === 1 ) {
