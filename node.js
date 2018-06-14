@@ -4,6 +4,7 @@ let debug          = require('debug')('epmd:node');
 let ErlangSocket   = require('./socket').ErlangSocket;
 let os             = require('os');
 let encoder        = require('./epmd/encoder');
+let decoder        = require('./epmd/decoder');
 
 class Node {
   constructor(node, cookie) {
@@ -17,16 +18,14 @@ class Node {
     let info = EpmdConnection.host_info(this._node);
     debug(`host info: ${JSON.stringify(info)}`);
     return new Promise(resolve => {
-
+      this.resolve = resolve;
       this._maybeGetHost()
         .then(() => {
           debug(`connecting to erlang node - ${JSON.stringify(this._node_info)}`);
           this.socket = new ErlangSocket(info.node);
-          this.socket.on('data', buffer => {
-            resolve(buffer);
-          });
+          this.socket.on('data', this._handleData.bind(this));
           return this.socket.connect(info.host, this._node_info.port)
-            .then(() => this._send_node_name())
+            .then(() => this._send_node_name());
         });
 
     });
@@ -49,6 +48,13 @@ class Node {
       }
       resolve();
     });
+  }
+
+  _handleData(buffer) {
+    if (decoder.isStatusResponse(buffer)) {
+      return;
+    }
+    this.resolve(buffer);
   }
 
   _send_node_name() {

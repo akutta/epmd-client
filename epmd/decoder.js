@@ -7,6 +7,10 @@ class DecoderError extends Error {
   }
 }
 
+exports.isStatusResponse = buf => {
+  return true;
+}
+
 exports.decodePortResponse = buf => {
   let result = buf.readUInt8(1);
   if ( result === 1 ) {
