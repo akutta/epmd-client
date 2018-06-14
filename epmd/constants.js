@@ -20,3 +20,9 @@ exports.HIGHEST_VERSION  = 5;
 exports.LOWEST_VERSION   = 5;
 
 exports.NODE_REGEXP = /.*name\s*<?([^>\s]+)>?\s.*at port (\d+)(, fd = (\d+))?.*/i;
+
+// http://erlang.org/doc/apps/erts/erl_dist_protocol.html#dflags
+exports.DFLAG_EXTENDED_REFERENCES = 4; // required for connecting to nodes
+exports.DFLAG_EXTENDED_PIDS_PORTS = 256; // required for connecting to nodes
+exports.DFLAG_BIT_BINARIES = 1024;
+exports.DFLAG_NEW_FLOATS = 2048;

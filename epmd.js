@@ -17,7 +17,6 @@ class EpmdConnection {
     let socket = new ErlangSocket('epmd');
     return new Promise((resolve, reject) => {
       socket.on('data', buffer => {
-        debug('RECV', buffer);
         let result = decoder.decodePortResponse(buffer);
         debug(`decoded response: ${JSON.stringify(result)}`);
 
