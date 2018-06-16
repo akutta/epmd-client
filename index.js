@@ -1,1 +1,1 @@
-exports.Node = require('./node').Node;
+exports.Node = require('./Node').Node;

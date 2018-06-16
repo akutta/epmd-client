@@ -1,19 +1,32 @@
 let constants = require('./constants');
+let debug     = require('debug')('epmd:decoder');
 
 class DecoderError extends Error {
-  constructor (message) {
-    super(message)
-    this.name = 'DecoderError'
+  constructor(message) {
+    super(message);
+    this.name = 'DecoderError';
   }
 }
 
-exports.isStatusResponse = buf => {
-  return true;
-}
+exports.getMessageType = buf => {
+  let length = buf.readUInt8(0) + 2;
+  let remainingBuffer = Buffer.from(buf, length);
+  let type = buf.toString('utf8', 2, 3);
+  debug('Message Type: ', type);
+  return { type, length, buffer: Buffer.from(buf, 0, length), remainingBuffer }
+};
+
+exports.maybeParseStatusResponse = message => {
+  if (message.type !== 's') {
+    return null;
+  }
+
+  return message.buffer.toString('utf8', 3);
+};
 
 exports.decodePortResponse = buf => {
   let result = buf.readUInt8(1);
-  if ( result === 1 ) {
+  if (result === 1) {
     return null;
   }
   if (result > 0) {
