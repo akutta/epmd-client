@@ -1,10 +1,11 @@
 let EpmdConnection = require('./epmd').EpmdConnection;
-let epmd           = new EpmdConnection();
 let debug          = require('debug')('epmd:node');
 let ErlangSocket   = require('./socket').ErlangSocket;
 let os             = require('os');
 let encoder        = require('./epmd/encoder');
 let decoder        = require('./epmd/decoder');
+let NodeConnection = require('./NodeConnection').NodeConnection;
+let epmd           = new EpmdConnection();
 
 class Node {
   constructor(node, cookie) {
@@ -18,7 +19,7 @@ class Node {
     debug(`host info: ${JSON.stringify(info)}`);
     return new Promise((resolve, reject) => {
       this.resolve = resolve;
-      this.reject = reject;
+      this.reject  = reject;
       this._maybeGetHost()
         .then(() => {
           debug(`connecting to erlang node - ${JSON.stringify(this._node_info)}`);
@@ -27,7 +28,6 @@ class Node {
           return this.socket.connect(info.host, this._node_info.port)
             .then(() => this._send_node_name());
         });
-
     });
   }
 
@@ -51,15 +51,15 @@ class Node {
   }
 
   _handleData(buffer) {
-    let type = decoder.getMessageType(buffer);
-    let status = decoder.maybeParseStatusResponse(type)
-    if (status && status !== 'ok')  {
+    let type   = decoder.getMessageType(buffer);
+    let status = decoder.maybeParseStatusResponse(type);
+    if (status && status !== 'ok') {
       debug('invalid status response', status);
       this.reject('invalid status response');
       return;
     }
 
-    this.resolve();
+    this.resolve(new NodeConnection(this.socket));
   }
 
   _send_node_name() {
