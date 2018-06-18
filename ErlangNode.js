@@ -26,6 +26,7 @@ class ErlangNode {
           debug(`connecting to erlang node - ${JSON.stringify(this._node_info)}`);
           this.socket = new ErlangSocket(info.node);
           this.socket.on('data', this._handleData.bind(this));
+          this.socket.on('closed', () => this.reject('socket closed'));
           return this.socket.connect(info.host, this._node_info.port)
             .then(() => this._send_node_name());
         });
