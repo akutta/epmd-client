@@ -37,6 +37,12 @@ exports.maybeParseChallengeRequest = message => {
   }
 };
 
+exports.maybeParseChallengeAck = message => {
+  if ( message.type !== 'a') {
+
+  }
+};
+
 exports.decodePortResponse = buf => {
   let result = buf.readUInt8(1);
   if (result === 1) {
