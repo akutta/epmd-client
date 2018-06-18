@@ -1,7 +1,7 @@
 let debug   = require('debug')('epmd:epmd');
 let encoder = require('./epmd/encoder');
 let decoder = require('./epmd/decoder');
-let ErlangSocket = require('./socket').ErlangSocket;
+let ErlangSocket = require('./ErlangSocket').ErlangSocket;
 
 class EpmdConnection {
   static host_info(nodename) {

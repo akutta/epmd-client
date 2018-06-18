@@ -1,4 +1,4 @@
-let Node = require('./Node').Node;
+let Node = require('./ErlangNode').Node;
 let node = new Node('simulator', 'simulator');
 node.connect()
   .then(conn => conn.rpc('th_thermostat', 'verify'))

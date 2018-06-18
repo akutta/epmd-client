@@ -1,1 +1,1 @@
-exports.Node = require('./Node').Node;
+exports.Node = require('./ErlangNode').Node;

@@ -1,13 +1,13 @@
-let EpmdConnection = require('./epmd').EpmdConnection;
+let EpmdConnection = require('./EpmdConnection').EpmdConnection;
 let debug          = require('debug')('epmd:node');
-let ErlangSocket   = require('./socket').ErlangSocket;
+let ErlangSocket   = require('./ErlangSocket').ErlangSocket;
 let os             = require('os');
 let encoder        = require('./epmd/encoder');
 let decoder        = require('./epmd/decoder');
 let NodeConnection = require('./NodeConnection').NodeConnection;
 let epmd           = new EpmdConnection();
 
-class Node {
+class ErlangNode {
   constructor(node, cookie) {
     this._cookie = cookie;
     this._node   = node;
@@ -53,9 +53,8 @@ class Node {
   _handleData(buffer) {
     let type   = decoder.getMessageType(buffer);
     let status = decoder.maybeParseStatusResponse(type);
-    if (status && status !== 'ok') {
-      debug('invalid status response', status);
-      this.reject('invalid status response');
+    if (status) {
+      this._handleStatus(status);
       return;
     }
 
@@ -63,8 +62,12 @@ class Node {
   }
 
   _send_node_name() {
-    return this.socket.send(encoder.sendName(Node._nodeName()));
+    return this.socket.send(encoder.sendName(ErlangNode._nodeName()));
+  }
+
+  _handleStatus(status) {
+
   }
 }
 
-exports.Node = Node;
+exports.Node = ErlangNode;
