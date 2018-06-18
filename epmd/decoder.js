@@ -18,7 +18,7 @@ exports.getMessageType = buf => {
 
 exports.maybeParseStatusResponse = message => {
   if (message.type !== 's') {
-    return null;
+    return undefined;
   }
 
   return message.buffer.toString('utf8', 3);

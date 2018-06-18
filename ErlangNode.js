@@ -66,6 +66,16 @@ class ErlangNode {
   }
 
   _handleStatus(status) {
+    switch (status) {
+      case 'ok':
+      case 'ok_simultaneous':
+        debug('waiting for gen_challenge');
+        break;
+      default:
+        this.socket.close();
+        this.reject(`unexpected status: ${status}`);
+        break;
+    }
 
   }
 }
