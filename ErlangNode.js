@@ -5,6 +5,7 @@ let os             = require('os');
 let encoder        = require('./epmd/encoder');
 let decoder        = require('./epmd/decoder');
 let NodeConnection = require('./NodeConnection').NodeConnection;
+let crypto         = require('crypto');
 let epmd           = new EpmdConnection();
 
 class ErlangNode {
@@ -51,10 +52,16 @@ class ErlangNode {
   }
 
   _handleData(buffer) {
-    let type   = decoder.getMessageType(buffer);
-    let status = decoder.maybeParseStatusResponse(type);
+    let type      = decoder.getMessageType(buffer);
+    let status    = decoder.maybeParseStatusResponse(type);
+    let challenge = decoder.maybeParseChallengeRequest(type);
     if (status) {
       this._handleStatus(status);
+      return;
+    }
+
+    if (challenge) {
+      this._handleChallenge(challenge);
       return;
     }
 
@@ -76,7 +83,16 @@ class ErlangNode {
         this.reject(`unexpected status: ${status}`);
         break;
     }
+  }
 
+  _handleChallenge(challenge) {
+    debug(`challenge: ${JSON.stringify(challenge)}`);
+    let digest      = crypto.createHash('md5').update(`${this._cookie}${challenge.challenge}`).digest();
+    this._challenge = Math.floor(Math.random() * 10000);
+
+    debug('digest: ', digest);
+
+    return this.socket.send(encoder.sendChallenge(digest, this._challenge));
   }
 }
 

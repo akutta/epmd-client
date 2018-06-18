@@ -9,11 +9,11 @@ class DecoderError extends Error {
 }
 
 exports.getMessageType = buf => {
-  let length = buf.readUInt8(0) + 2;
+  let length          = buf.readUInt8(0) + 2;
   let remainingBuffer = Buffer.from(buf, length);
-  let type = buf.toString('utf8', 2, 3);
+  let type            = buf.toString('utf8', 2, 3);
   debug('Message Type: ', type);
-  return { type, length, buffer: Buffer.from(buf, 0, length), remainingBuffer }
+  return { type, length, buffer: Buffer.from(buf, 0, length), remainingBuffer };
 };
 
 exports.maybeParseStatusResponse = message => {
@@ -22,6 +22,19 @@ exports.maybeParseStatusResponse = message => {
   }
 
   return message.buffer.toString('utf8', 3);
+};
+
+exports.maybeParseChallengeRequest = message => {
+  if ( message.type !== 'n') {
+    return undefined;
+  }
+
+  return {
+    version: message.buffer.readUInt16BE(3),
+    flags: message.buffer.readUInt32BE(5),
+    challenge: message.buffer.readUInt32BE(9),
+    name: message.buffer.toString('utf8', 13)
+  }
 };
 
 exports.decodePortResponse = buf => {
