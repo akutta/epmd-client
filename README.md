@@ -7,8 +7,7 @@ Pure NodeJS Client that can send RPC calls to an Erlang node.
     let Node = require('epmd-client').Node
     let node = new Node('simulator', 'simulator')
     node.connect()
-      .then(conn => conn.rpc('th_thermostat', 'verify'))node.connect()
-                                                          .then(conn => conn.rpc('th_thermostat', 'verify'))
+      .then(conn => conn.rpc('th_thermostat', 'verify'))
 </pre>
 
 
